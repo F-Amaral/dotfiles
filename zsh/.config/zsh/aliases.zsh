@@ -1,0 +1,29 @@
+#!/bin/zsh
+
+alias gs='git status'
+alias gc='git commit -m'
+alias ga='git add -A'
+alias gac='git add -A && git commit -m'
+alias push='git push'
+alias pull='git pull'
+alias fetch='git fetch -p'
+alias up='git push --set-upstream origin'
+alias gco='git checkout -b'
+alias develop='git checkout develop'
+alias master='git checkout master'
+alias ll='ls -l'
+alias la='ls -la'
+alias home='cd $HOME'
+alias ml='cd $HOME/go/src/github.com/melisource'
+alias fe='cd $HOME/dev'
+alias gotest='go test ./...'
+alias lint='golangci-lint run ./...'
+alias tidy='go mod tidy'
+alias fcv='fury create-version'
+alias gck='git checkout'
+alias ftv="fury create-version \$(date '+%y.%m.%d-%Hh%Mm%Ss-testing' | sed -e 's/\.0/\./g')"
+alias vim=nvim
+alias zrc="$EDITOR $HOME/.zshrc"
+alias src="source $HOME/.zshrc"
+alias tmx="tmux new -s \${(U)\$(pwd | rev | cut -d / -f 1 | rev)}"
+
