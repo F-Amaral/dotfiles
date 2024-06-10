@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 alias gs='git status'
 alias gc='git commit -m'

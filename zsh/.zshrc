@@ -2,7 +2,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="spaceship"
 
- HYPHEN_INSENSITIVE="true"
+HYPHEN_INSENSITIVE="true"
 
 plugins=(git asdf)
 
@@ -10,9 +10,9 @@ source $ZSH/oh-my-zsh.sh
 
 bindkey "^o" clear-screen
 
-zinit ice pick"$HOME/.config/zsh/aliases.zsh"
-zinit ice pick"$HOME/.config/zsh/exports.zsh"
-zinit ice pick"$HOME/.config/zsh/themes.zsh"
+source "$HOME/.config/zsh/aliases.zsh"
+source "$HOME/.config/zsh/exports.zsh"
+source "$HOME/.config/zsh/themes.zsh"
 
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
@@ -26,6 +26,7 @@ fi
 source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
+
 
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)
@@ -44,4 +45,10 @@ zinit light zsh-users/zsh-completions
 zinit ice depth=1
 zinit light jeffreytse/zsh-vi-mode
 
-zinit ice pick"$HOME/.config/zsh/fury.zsh"
+export RANGER_FURY_LOCATION=/Users/famaral/.fury #Added by Fury CLI
+export RANGER_FURY_VENV_LOCATION=/Users/famaral/.fury/fury_venv #Added by Fury CLI
+
+# Added by Fury CLI installation process
+declare FURY_BIN_LOCATION="/Users/famaral/.fury/fury_venv/bin" # Added by Fury CLI installation process
+export PATH="$PATH:$FURY_BIN_LOCATION" # Added by Fury CLI installation process
+# Added by Fury CLI installation process
