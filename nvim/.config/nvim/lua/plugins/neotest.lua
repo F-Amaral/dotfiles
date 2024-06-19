@@ -11,6 +11,7 @@ return {
 			adapters = {
 				["neotest-go"] = {
 					args = { "-timeout=60s", "-race", "-covermode=atomic", "-shuffle=on" },
+                    recursive_run = true,
 				},
 			},
 			status = { virtual_text = true },
@@ -101,7 +102,7 @@ return {
 			{
 				"<leader>tT",
 				function()
-					require("neotest").run.run(vim.loop.cwd())
+					require("neotest").run.run(vim.fn.getcwd())
 				end,
 				desc = "Run All Test Files",
 			},
