@@ -17,7 +17,7 @@ return {
 	"taybart/b64.nvim",
 	version = "*",
 	keys = {
-		{ "<Leader>b", '<cmd>lua require("b64").encode()<CR>', mode = "v", { noremap = true, silent = true } },
-		{ "<Leader>B", '<cmd>lua require("b64").decode()<CR>', mode = "v", { noremap = true, silent = true } },
+		{ "<Leader>b", '<cmd>lua require("b64").encode()<CR>', mode = "v", desc = "Encode buffer with b64", { noremap = true, silent = true } },
+		{ "<Leader>B", '<cmd>lua require("b64").decode()<CR>', mode = "v", desc = "Decode buffer with b64", { noremap = true, silent = true  } },
 	},
 }

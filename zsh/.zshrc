@@ -4,7 +4,7 @@ ZSH_THEME="spaceship"
 
 HYPHEN_INSENSITIVE="true"
 
-plugins=(git asdf)
+plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
 

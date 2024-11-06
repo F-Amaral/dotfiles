@@ -1,186 +1,182 @@
 return {
-	{
-		"nvim-neotest/neotest",
-		lazy = false,
-		dependencies = {
+    -- Neotest setup
+    {
+        "nvim-neotest/neotest",
+        event = "VeryLazy",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "antoinemadec/FixCursorHold.nvim",
+            "nvim-treesitter/nvim-treesitter",
+
+            "nvim-neotest/neotest-plenary",
+            "nvim-neotest/neotest-vim-test",
+
             "nvim-neotest/nvim-nio",
-			"nvim-lua/plenary.nvim",
-			"nvim-neotest/neotest-go",
-		},
-		opts = {
-			adapters = {
-				["neotest-go"] = {
-					args = { "-timeout=60s", "-race", "-covermode=atomic", "-shuffle=on" },
-                    recursive_run = true,
-				},
-			},
-			status = { virtual_text = true },
-			output = { opent_on_run = true },
-			quickfix = {
-				open = function()
-					require("trouble").open({ mode = "quickfix", focus = false })
-				end,
-			},
-		},
-		config = function(_, opts)
-			local neotest_ns = vim.api.nvim_create_namespace("neotest")
-			vim.diagnostic.config({
-				virtual_text = {
-					format = function(diagnostic)
-						-- Replace newline and tab characters with space for more compact diagnostics
-						local message =
-							diagnostic.message:gsub("\n", " "):gsub("\t", " "):gsub("%s+", " "):gsub("^%s+", "")
-						return message
-					end,
-				},
-			}, neotest_ns)
 
-			opts.consumers = opts.consumers or {}
-			-- Refresh and auto close trouble after running tests
-			---@type neotest.Consumer
-			opts.consumers.trouble = function(client)
-				client.listeners.results = function(adapter_id, results, partial)
-					if partial then
-						return
-					end
-					local tree = assert(client:get_position(nil, { adapter = adapter_id }))
-
-					local failed = 0
-					for pos_id, result in pairs(results) do
-						if result.status == "failed" and tree:get_key(pos_id) then
-							failed = failed + 1
-						end
-					end
-					vim.schedule(function()
-						local trouble = require("trouble")
-						if trouble.is_open() then
-							trouble.refresh()
-							if failed == 0 then
-								trouble.close()
-							end
-						end
-					end)
-					return {}
-				end
-			end
-			if opts.adapters then
-				local adapters = {}
-				for name, config in pairs(opts.adapters or {}) do
-					if type(name) == "number" then
-						if type(config) == "string" then
-							config = require(config)
-						end
-						adapters[#adapters + 1] = config
-					elseif config ~= false then
-						local adapter = require(name)
-						if type(config) == "table" and not vim.tbl_isempty(config) then
-							local meta = getmetatable(adapter)
-							if adapter.setup then
-								adapter.setup(config)
-							elseif meta and meta.__call then
-								adapter(config)
-							else
-								error("Adapter " .. name .. " does not support setup")
-							end
-						end
-						adapters[#adapters + 1] = adapter
-					end
-				end
-				opts.adapters = adapters
-			end
-
-			require("neotest").setup(opts)
-		end,
-		keys = {
-			{
-				"<leader>tt",
-				function()
-					require("neotest").run.run(vim.fn.expand("%"))
-				end,
-				desc = "Run File",
-			},
-			{
-				"<leader>tT",
-				function()
-					require("neotest").run.run(vim.fn.getcwd())
-				end,
-				desc = "Run All Test Files",
-			},
-			{
-				"<leader>tr",
-				function()
-					require("neotest").run.run()
-				end,
-				desc = "Run Nearest",
-			},
-			{
-				"<leader>ts",
-				function()
-					require("neotest").summary.toggle()
-				end,
-				desc = "Toggle Summary",
-			},
-			{
-				"<leader>to",
-				function()
-					require("neotest").output.open({ enter = true, auto_close = true })
-				end,
-				desc = "Show Output",
-			},
-			{
-				"<leader>tO",
-				function()
-					require("neotest").output_panel.toggle()
-				end,
-				desc = "Toggle Output Panel",
-			},
-			{
-				"<leader>tS",
-				function()
-					require("neotest").run.stop()
-				end,
-				desc = "Stop",
-			},
-		},
-	},
-	{
-		"nvim-neotest/neotest-go",
-		lazy = false,
-	},
-	{
-		"mfussenegger/nvim-dap",
-		optional = true,
-        -- stylua: ignore
-        keys = {
-            { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Debug Nearest" },
+            {
+                "fredrikaverpil/neotest-golang",
+                dependencies = {
+                    {
+                        "leoluz/nvim-dap-go",
+                        opts = {},
+                    },
+                },
+                branch = "main",
+            },
         },
-	},
-	{
-		"andythigpen/nvim-coverage",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = {
-			commands = true, -- create commands
-			auto_reload = true,
-			highlights = {
-				-- customize highlight groups created by the plugin
-				covered = { fg = "#C3E88D" }, -- supports style, fg, bg, sp (see :h highlight-gui)
-				uncovered = { fg = "#F07178" },
-			},
-			signs = {
-				-- use your own highlight groups or text markers
-				covered = { hl = "CoverageCovered", text = "▎" },
-				uncovered = { hl = "CoverageUncovered", text = "▎" },
-			},
-			summary = {
-				-- customize the summary pop-up
-				min_coverage = 80.0, -- minimum coverage threshold (used for highlighting)
-			},
-			lang = {
-				go = {
-					coverage_file = "cover.cov",
-				},
-				-- customize language specific settings
-			},
-		},
-	},
+        opts = function(_, opts)
+            opts.adapters = opts.adapters or {}
+            opts.adapters["neotest-golang"] = {
+                go_test_args = {
+                    "-v",
+                    "-race",
+                    "-timeout=60s",
+                    "-shuffle=on",
+                    "-coverprofile=" .. vim.fn.getcwd() .. "/coverage.out",
+                },
+                dap_go_enabled = true,
+                quickfix = {
+                    open = function()
+                        vim.cmd("Trouble quickfix")
+                    end,
+                    enabled = true
+                }
+            }
+        end,
+        config = function(_, opts)
+            if opts.adapters then
+                local adapters = {}
+                for name, config in pairs(opts.adapters or {}) do
+                    if type(name) == "number" then
+                        if type(config) == "string" then
+                            config = require(config)
+                        end
+                        adapters[#adapters + 1] = config
+                    elseif config ~= false then
+                        local adapter = require(name)
+                        if type(config) == "table" and not vim.tbl_isempty(config) then
+                            local meta = getmetatable(adapter)
+                            if adapter.setup then
+                                adapter.setup(config)
+                            elseif meta and meta.__call then
+                                adapter(config)
+                            else
+                                error("Adapter " .. name .. " does not support setup")
+                            end
+                        end
+                        adapters[#adapters + 1] = adapter
+                    end
+                end
+                opts.adapters = adapters
+            end
+
+            require("neotest").setup(opts)
+        end,
+        keys = {
+            { "<leader>ta", function() require("neotest").run.attach() end,                                     desc = "[t]est [a]ttach" },
+            { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end,                      desc = "[t]est run [f]ile" },
+            { "<leader>tA", function() require("neotest").run.run(vim.uv.cwd()) end,                            desc = "[t]est [A]ll files" },
+            { "<leader>tS", function() require("neotest").run.run({ suite = true }) end,                        desc = "[t]est [S]uite" },
+            { "<leader>tn", function() require("neotest").run.run() end,                                        desc = "[t]est [n]earest" },
+            { "<leader>tl", function() require("neotest").run.run_last() end,                                   desc = "[t]est [l]ast" },
+            { "<leader>ts", function() require("neotest").summary.toggle() end,                                 desc = "[t]est [s]ummary" },
+            { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "[t]est [o]utput" },
+            { "<leader>tO", function() require("neotest").output_panel.toggle() end,                            desc = "[t]est [O]utput panel" },
+            { "<leader>tt", function() require("neotest").run.stop() end,                                       desc = "[t]est [t]erminate" },
+            { "<leader>td", function() require("neotest").run.run({ suite = false, strategy = "dap" }) end,     desc = "Debug nearest test" },
+        },
+    },
+
+    -- DAP setup
+    {
+        "mfussenegger/nvim-dap",
+        event = "VeryLazy",
+        dependencies = {
+            {
+                "rcarriga/nvim-dap-ui",
+                dependencies = {
+                    "nvim-neotest/nvim-nio",
+                },
+                opts = {},
+                config = function(_, opts)
+                    -- setup dap config by VsCode launch.json file
+                    -- require("dap.ext.vscode").load_launchjs()
+                    local dap = require("dap")
+                    local dapui = require("dapui")
+                    dapui.setup(opts)
+                    dap.listeners.after.event_initialized["dapui_config"] = function()
+                        dapui.open({})
+                    end
+                    dap.listeners.before.event_terminated["dapui_config"] = function()
+                        dapui.close({})
+                    end
+                    dap.listeners.before.event_exited["dapui_config"] = function()
+                        dapui.close({})
+                    end
+                end,
+                keys = {
+                    { "<leader>du", function() require("dapui").toggle({}) end, desc = "[d]ap [u]i" },
+                    { "<leader>de", function() require("dapui").eval() end,     desc = "[d]ap [e]val" },
+                },
+            },
+            {
+                "theHamsta/nvim-dap-virtual-text",
+                opts = {},
+            },
+            {
+                "leoluz/nvim-dap-go",
+                opts = {},
+            },
+        },
+        keys = {
+            { "<leader>db", function() require("dap").toggle_breakpoint() end,                                    desc = "toggle [d]ebug [b]reakpoint" },
+            { "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, desc = "[d]ebug [B]reakpoint" },
+            { "<leader>dc", function() require("dap").continue() end,                                             desc = "[d]ebug [c]ontinue (start here)" },
+            { "<leader>dC", function() require("dap").run_to_cursor() end,                                        desc = "[d]ebug [C]ursor" },
+            { "<leader>dg", function() require("dap").goto_() end,                                                desc = "[d]ebug [g]o to line" },
+            { "<leader>do", function() require("dap").step_over() end,                                            desc = "[d]ebug step [o]ver" },
+            { "<leader>dO", function() require("dap").step_out() end,                                             desc = "[d]ebug step [O]ut" },
+            { "<leader>di", function() require("dap").step_into() end,                                            desc = "[d]ebug [i]nto" },
+            { "<leader>dj", function() require("dap").down() end,                                                 desc = "[d]ebug [j]ump down" },
+            { "<leader>dk", function() require("dap").up() end,                                                   desc = "[d]ebug [k]ump up" },
+            { "<leader>dl", function() require("dap").run_last() end,                                             desc = "[d]ebug [l]ast" },
+            { "<leader>dp", function() require("dap").pause() end,                                                desc = "[d]ebug [p]ause" },
+            { "<leader>dr", function() require("dap").repl.toggle() end,                                          desc = "[d]ebug [r]epl" },
+            { "<leader>dR", function() require("dap").clear_breakpoints() end,                                    desc = "[d]ebug [R]emove breakpoints" },
+            { "<leader>ds", function() require("dap").session() end,                                              desc = "[d]ebug [s]ession" },
+            { "<leader>dt", function() require("dap").terminate() end,                                            desc = "[d]ebug [t]erminate" },
+            { "<leader>dw", function() require("dap.ui.widgets").hover() end,                                     desc = "[d]ebug [w]idgets" },
+        },
+    },
+
+    -- Coverage
+    {
+        "andythigpen/nvim-coverage",
+        dependencies = {
+            "nvim-lua/plenary.nvim"
+        },
+        event = "VeryLazy",
+        opts = {
+            commands = true, -- create commands
+            highlights = {
+                -- customize highlight groups created by the plugin
+                covered = { fg = "#C3E88D" }, -- supports style, fg, bg, sp (see :h highlight-gui)
+                uncovered = { fg = "#F07178" },
+            },
+            signs = {
+                -- use your own highlight groups or text markers
+                covered = { hl = "CoverageCovered", text = "▎" },
+                uncovered = { hl = "CoverageUncovered", text = "▎" },
+            },
+            summary = {
+                -- customize the summary pop-up
+                min_coverage = 80.0, -- minimum coverage threshold (used for highlighting)
+            },
+        },
+        keys = {
+
+
+        }
+
+    }
 }
