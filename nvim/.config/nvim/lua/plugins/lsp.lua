@@ -1,153 +1,199 @@
 return {
+
     {
-        "VonHeikemen/lsp-zero.nvim",
-        branch = "v3.x",
-        lazy = true,
-        config = false,
-        init = function()
-            -- Disable automatic setup, we are doing it manually
-            vim.g.lsp_zero_extend_cmp = 0
-            vim.g.lsp_zero_extend_lspconfig = 0
-        end,
-    },
-    {
-        "williamboman/mason.nvim",
-        lazy = false,
-        config = true,
-    },
-    {
-        "williamboman/mason-lspconfig.nvim",
-        opts = {
-            ensure_installed = {
-                "lua_ls",
-                "gopls",
-                "rust_analyzer",
-                "tsserver",
-                "jsonls",
+        {
+            'williamboman/mason.nvim',
+            lazy = false,
+            opts = {},
+        },
+        {
+            "L3MON4D3/LuaSnip",
+            -- follow latest release.
+            version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+            -- install jsregexp (optional!).
+            build = "make install_jsregexp"
+        },
+        -- Autocompletion
+        {
+            'hrsh7th/nvim-cmp',
+            event = 'InsertEnter',
+            config = function()
+                local cmp = require('cmp')
+
+                cmp.setup({
+                    preselect = 'item',
+                    completion = {
+                        completeopt = 'menu, menuone, noinsert'
+                    },
+                    sources = {
+                        { name = 'nvim_lsp' },
+                        { name = 'buffer' },
+                    },
+                    mapping = cmp.mapping.preset.insert({
+                        ['<C-Space>'] = cmp.mapping.complete(),
+                        ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+
+                        ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+                        ['<C-d>'] = cmp.mapping.scroll_docs(4),
+                    }),
+                    snippet = {
+                        expand = function(args)
+                            require('luasnip').lsp_expand(args.body)
+                        end,
+                    },
+                })
+            end
+        },
+
+        -- LSP
+        {
+            'neovim/nvim-lspconfig',
+            cmd = { 'LspInfo', 'LspInstall', 'LspStart' },
+            event = { 'BufReadPre', 'BufNewFile' },
+            dependencies = {
+                { 'hrsh7th/cmp-nvim-lsp' },
+                { 'williamboman/mason.nvim' },
+                { 'williamboman/mason-lspconfig.nvim' },
             },
-        },
-    },
+            init = function()
+                -- Reserve a space in the gutter
+                -- This will avoid an annoying layout shift in the screen
+                vim.opt.signcolumn = 'yes'
+            end,
+            config = function()
+                local lsp_defaults = require('lspconfig').util.default_config
 
-    -- Autocompletion
-    {
-        "hrsh7th/nvim-cmp",
-        event = "InsertEnter",
-        dependencies = {
-            { "L3MON4D3/LuaSnip" },
-        },
-        config = function()
-            -- Here is where you configure the autocompletion settings.
-            local lsp_zero = require("lsp-zero")
-            lsp_zero.extend_cmp()
+                -- Add cmp_nvim_lsp capabilities settings to lspconfig
+                -- This should be executed before you configure any language server
+                lsp_defaults.capabilities = vim.tbl_deep_extend(
+                    'force',
+                    lsp_defaults.capabilities,
+                    require('cmp_nvim_lsp').default_capabilities()
+                )
 
-            -- And you can configure cmp even more, if you want to.
-            local cmp = require("cmp")
-            local cmp_action = lsp_zero.cmp_action()
+                -- LspAttach is where you enable features that only work
+                -- if there is a language server active in the file
+                vim.api.nvim_create_autocmd('LspAttach', {
+                    desc = 'LSP actions',
+                    callback = function(event)
+                        local opts = { buffer = event.buf }
 
-            cmp.setup({
-                formatting = lsp_zero.cmp_format(),
-                sources = {
-                    { name = "copilot" },
-                    { name = "nvim_lsp" },
-                },
-                mapping = cmp.mapping.preset.insert({
-                    ["<C-Space>"] = cmp.mapping.complete(),
-                    ["<C-u>"] = cmp.mapping.scroll_docs(-4),
-                    ["<C-d>"] = cmp.mapping.scroll_docs(4),
-                    ["<C-f>"] = cmp_action.luasnip_jump_forward(),
-                    ["<C-b>"] = cmp_action.luasnip_jump_backward(),
-                    ["<Tab>"] = cmp.mapping(function(fallback)
-                        -- This little snippet will confirm with tab, and if no entry is selected, will confirm the first item
-                        if cmp.visible() then
-                            local entry = cmp.get_selected_entry()
-                            if not entry then
-                                cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-                            else
-                                cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
-                            end
-                        else
-                            fallback()
-                        end
-                    end, { "i", "s" }),
-                }),
-            })
-        end,
-    },
-
-    -- LSP
-    {
-        "neovim/nvim-lspconfig",
-        cmd = { "LspInfo", "LspInstall", "LspStart" },
-        event = { "BufReadPre", "BufNewFile" },
-        dependencies = {
-            { "hrsh7th/cmp-nvim-lsp" },
-            { "williamboman/mason-lspconfig.nvim" },
-        },
-        config = function()
-            -- This is where all the LSP shenanigans will live
-            local lsp_zero = require("lsp-zero")
-            lsp_zero.extend_lspconfig()
-
-            lsp_zero.on_attach(function(client, bufnr)
-                -- see :help lsp-zero-keybindings
-                -- to learn the available actions
-                lsp_zero.default_keymaps({ buffer = bufnr })
-            end)
-
-            require("mason-lspconfig").setup({
-                ensure_installed = { "gopls" },
-                handlers = {
-                    lsp_zero.default_setup,
-                    lua_ls = function()
-                        -- (Optional) Configure lua language server for neovim
-                        local lua_opts = lsp_zero.nvim_lua_ls()
-                        require("lspconfig").lua_ls.setup(lua_opts)
+                        vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+                        vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+                        vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+                        vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+                        vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+                        vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+                        vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+                        vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+                        vim.keymap.set({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+                        vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+                        vim.keymap.set('n', '<C-f>', '<cmd>cmp_action.luasnip_jump_forward()<cr>', opts)
+                        vim.keymap.set('n', '<C-b>', '<cmd>cmp_action.luasnip_jump_backward()<cr>', opts)
                     end,
-                    gopls = function()
-                        local gopls = require("lspconfig").gopls.setup({
-                            settings = {
-                                gopls = {
-                                    analyses = {
-                                        unusedparams = true,
-                                        shadow = true,
-                                        unusedwrite = true,
-                                        unusedvariable = true,
-                                        useany = true,
-                                        nilness = true,
+                })
+
+                vim.diagnostic.config({
+                    signs = {
+                        text = {
+                            [vim.diagnostic.severity.ERROR] = '✘',
+                            [vim.diagnostic.severity.WARN] = '▲',
+                            [vim.diagnostic.severity.HINT] = '⚑',
+                            [vim.diagnostic.severity.INFO] = '»',
+                        },
+                    },
+                })
+
+                require('mason-lspconfig').setup({
+                    ensure_installed = {
+                        "lua_ls",
+                        "gopls",
+                        "rust_analyzer",
+                        "tsserver",
+                        "jsonls",
+                    },
+                    handlers = {
+                        -- this first function is the "default handler"
+                        -- it applies to every language server without a "custom handler"
+                        function(server_name)
+                            require('lspconfig')[server_name].setup({})
+                        end,
+                        lua_ls = function()
+                            -- (Optional) Configure lua language server for neovim
+                            require("lspconfig").lua_ls.setup({
+                                settings = {
+                                    Lua = {
+                                        runtime = {
+                                            version = 'Lua 5.3',
+                                            path = {
+                                                '?.lua',
+                                                '?/init.lua',
+                                                vim.fn.expand '~/.luarocks/share/lua/5.3/?.lua',
+                                                vim.fn.expand '~/.luarocks/share/lua/5.3/?/init.lua',
+                                                '/usr/share/5.3/?.lua',
+                                                '/usr/share/lua/5.3/?/init.lua',
+                                            }
+                                        },
+                                        workspace = {
+                                            library = {
+                                                vim.fn.expand '~/.luarocks/share/lua/5.3',
+                                                '/usr/share/lua/5.3'
+                                            }
+                                        }
+                                    }
+                                }
+
+                            })
+                        end,
+                        gopls = function()
+                            require("lspconfig").gopls.setup({
+                                on_attach = function(client, bufnr)
+                                    -- client.server_capabilities.semanticTokensProvider = nil
+                                end,
+                                settings = {
+                                    gopls = {
+                                        analyses = {
+                                            unusedparams = true,
+                                            shadow = true,
+                                            unusedwrite = true,
+                                            unusedvariable = true,
+                                            useany = true,
+                                            nilness = true,
+                                        },
+                                        codelenses = {
+                                            gc_details = false,
+                                            generate = true,
+                                            regenerate_cgo = true,
+                                            run_govulncheck = true,
+                                            test = true,
+                                            tidy = true,
+                                            upgrade_dependency = true,
+                                            vendor = true,
+                                        },
+                                        hints = {
+                                            assignVariableTypes = true,
+                                            compositeLiteralFields = true,
+                                            compositeLiteralTypes = true,
+                                            constantValues = true,
+                                            functionTypeParameters = true,
+                                            parameterNames = true,
+                                            rangeVariableTypes = true,
+                                        },
+                                        staticcheck = true,
+                                        gofumpt = true,
+                                        usePlaceholders = true,
+                                        completeFunctionCalls = true,
+                                        matcher = "Fuzzy",
                                     },
-                                    codelenses = {
-                                        gc_details = false,
-                                        generate = true,
-                                        regenerate_cgo = true,
-                                        run_govulncheck = true,
-                                        test = true,
-                                        tidy = true,
-                                        upgrade_dependency = true,
-                                        vendor = true,
-                                    },
-                                    hints = {
-                                        assignVariableTypes = true,
-                                        compositeLiteralFields = true,
-                                        compositeLiteralTypes = true,
-                                        constantValues = true,
-                                        functionTypeParameters = true,
-                                        parameterNames = true,
-                                        rangeVariableTypes = true,
-                                    },
-                                    staticcheck = true,
-                                    gofumpt = true,
-                                    usePlaceholders = true,
-                                    completeFunctionCalls = true,
-                                    matcher = "Fuzzy",
                                 },
-                            },
-                        })
-                    end,
-                },
-            })
-        end,
-    },
+                            })
+                        end,
 
+                    }
+                })
+            end
+        }
+    },
     {
         "smjonas/inc-rename.nvim",
         config = function()
@@ -169,18 +215,5 @@ return {
         "tpope/vim-commentary",
         lazy = false,
     },
-    {
-        "ray-x/go.nvim",
-        dependencies = {
-            "ray-x/guihua.lua",
-            "neovim/nvim-lspconfig",
-            "nvim-treesitter/nvim-treesitter",
-        },
-        config = function()
-            require("go").setup()
-        end,
-        event = { "CmdlineEnter" },
-        ft = { "go", "gomon" },
-        build = ':lua require("go.install").update_all_async()',
-    },
+
 }
