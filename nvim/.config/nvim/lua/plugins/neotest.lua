@@ -15,13 +15,13 @@ return {
 
             {
                 "fredrikaverpil/neotest-golang",
+                version = "*",
                 dependencies = {
                     {
                         "leoluz/nvim-dap-go",
                         opts = {},
                     },
                 },
-                branch = "main",
             },
         },
         opts = function(_, opts)

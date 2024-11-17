@@ -26,4 +26,6 @@ alias vim=nvim
 alias zrc="$EDITOR $HOME/.zshrc"
 alias src="source $HOME/.zshrc"
 alias tmx="tmux new -s \${(U)\$(pwd | rev | cut -d / -f 1 | rev)}"
-
+alias ~="cd ~"
+alias ls='ls --color'
+alias ll='ls -la --color'

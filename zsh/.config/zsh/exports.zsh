@@ -14,3 +14,5 @@ export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
 ##export PATH=$HOME/go/1.22.2/bin:$PATH
 ## The following line is added by pre-commit 
 export PATH="/Users/famaral/Library/Python/3.9/bin:$PATH" 
+export PATH="$HOME/bin/.local/scripts:$PATH"
+
