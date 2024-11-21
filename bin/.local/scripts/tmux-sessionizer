@@ -3,7 +3,7 @@
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(find ~ ~/go/src/github.com/f-amaral ~/go/src/github.com/melisource -mindepth 1 -maxdepth 1 -type d | fzf)
+    selected=$(find ~ ~/go/src/github.com/f-amaral -mindepth 1 -maxdepth 1 -type d | fzf)
 fi
 
 if [[ -z $selected ]]; then

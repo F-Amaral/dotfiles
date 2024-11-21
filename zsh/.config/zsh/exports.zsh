@@ -3,7 +3,7 @@
 export EDITOR=nvim
 export VISUAL=nvim
 export GOPATH="$HOME/go"
-export GOROOT="$HOME/go/go1.22.4"
+export GOROOT="$HOME/go/go1.23.3"
 export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
 
 #export GOPRIVATE=github.com/mercadolibre/*,github.com/melisource/*
