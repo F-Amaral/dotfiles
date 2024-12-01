@@ -23,6 +23,14 @@ return {
 		{ "<leader>rr", "<Plug>RestNvim", { desc = "Run request", noremap = true, silent = true } },
 		{ "<leader>rl", "<Plug>RestNvim", { desc = "Run last request", noremap = true, silent = true } },
 		{
+			"<leader>rs",
+			function()
+				require("telescope").load_extension("rest")
+				require("telescope").extensions.rest.select_env()
+			end,
+			{ desc = "Select env", noremap = true, silent = true },
+		},
+		{
 			"<leader>res",
 			":RestSelectEnv ./rest/.env.stage.json",
 			{ desc = "Change env to stage", noremap = true, silent = true },
