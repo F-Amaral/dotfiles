@@ -3,10 +3,11 @@
 export EDITOR=nvim
 export VISUAL=nvim
 export GOPATH="$HOME/go"
-export GOROOT="$HOME/go/go1.23.3"
+export GOROOT="$HOME/go/go1.22.10"
 export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
 
-#export GOPRIVATE=github.com/mercadolibre/*,github.com/melisource/*
+export GOPRIVATE="github.com/foxbroadcasting/*"
+export GIT_TERMINAL_PROMPT=1
 #export GOPROXY=http://go.artifacts.furycloud.io/
 #export GONOPROXY=http://go.artifacts.furycloud.io/
 #export GO111MODULE=on

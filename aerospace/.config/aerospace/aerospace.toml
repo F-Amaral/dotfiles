@@ -9,7 +9,11 @@ after-login-command = []
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = []
+after-startup-command = ['exec-and-forget /usr/local/bin/sketchybar --reload']
+
+exec-on-workspace-change = ['/bin/bash', '-c',
+  '/usr/local/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
 
 # Start AeroSpace at login
 start-at-login = true
@@ -52,6 +56,11 @@ run = 'layout floating'
 if.app-name-regex-substring = 'spotify'
 run = 'layout floating'
 
+[[on-window-detected]]
+if.app-name-regex-substring = 'slackmacgap'
+run = 'layout floating'
+
+
 # Possible values: (qwerty|dvorak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
 [key-mapping]
@@ -70,7 +79,7 @@ inner.vertical =   0
 outer.left =       0
 outer.bottom =     0
 outer.top =        0
-outer.right =      0
+outer.right =      5
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -109,6 +118,7 @@ alt-ctrl-f = 'layout floating'
 alt-slash = 'layout tiles horizontal vertical'
 alt-comma = 'layout accordion horizontal vertical'
 
+
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
 alt-h = 'focus left'
 alt-j = 'focus down'
@@ -130,12 +140,17 @@ alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
 alt-4 = 'workspace 4'
+alt-5 = 'workspace 5'
+alt-6 = 'workspace 6'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
 alt-shift-3 = 'move-node-to-workspace 3'
 alt-shift-4 = 'move-node-to-workspace 4'
+alt-shift-5 = 'move-node-to-workspace 5'
+alt-shift-6 = 'move-node-to-workspace 6'
+
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
@@ -165,4 +180,11 @@ alt-o = 'exec-and-forget open -a /Applications/Obsidian.app'
 alt-k = 'exec-and-forget open -a /Applications/Kitty.app'
 alt-b = 'exec-and-forget open -a /Applications/Firefox.app'
 
+[workspace-to-monitor-force-assignment]
+1 = 'lg'
+2 = 'lg'
+3 = 'lg'
+4 = 'lg'
+5 = ['built-in', 'lg']
+6 = ['built-in', 'lg']
 

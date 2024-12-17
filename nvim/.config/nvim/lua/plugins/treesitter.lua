@@ -19,6 +19,8 @@ return {
 				"http",
 				"markdown",
 				"markdown_inline",
+				"terraform",
+				"hcl",
 			},
 			sync_install = false,
 			auto_install = true,

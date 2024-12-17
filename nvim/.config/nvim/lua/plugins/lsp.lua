@@ -5,6 +5,9 @@ return {
 			"williamboman/mason.nvim",
 			lazy = false,
 			opts = {},
+			config = function()
+				require("mason").setup()
+			end,
 		},
 		{
 			"L3MON4D3/LuaSnip",
@@ -21,7 +24,6 @@ return {
 				{ "hrsh7th/cmp-path" },
 				{ "hrsh7th/cmp-nvim-lua" },
 				{ "hrsh7th/cmp-buffer" },
-				{ dir = "~/go/src/github.com/F-Amaral/cmp-code-actions" },
 			},
 			event = "InsertEnter",
 			config = function()
@@ -41,7 +43,7 @@ return {
 						{ name = "cmp-actions" },
 					},
 					mapping = cmp.mapping.preset.insert({
-						["<C-Space>"] = cmp.mapping.complete(),
+						["<C-Tab>"] = cmp.mapping.complete(),
 						["<Tab>"] = cmp.mapping.confirm({ select = true }),
 
 						["<C-u>"] = cmp.mapping.scroll_docs(-4),
@@ -183,10 +185,10 @@ return {
 
 				require("mason-lspconfig").setup({
 					ensure_installed = {
-						"sumneko_lua",
 						"gopls",
-						"rust_analyzer",
-						"tsserver",
+						"lua_ls",
+						"terraformls",
+						"tflint",
 					},
 					handlers = {
 						-- this first function is the "default handler"
@@ -286,6 +288,25 @@ return {
 									},
 								},
 							})
+						end,
+						terraformls = function()
+							require("lspconfig").terraformls.setup({
+								vim.filetype.add({
+									extension = {
+										tf = "terraform",
+									},
+								}),
+								filetypes = { "terraform" },
+								vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+									pattern = { "*.tf", "*.tfvars" },
+									callback = function()
+										vim.lsp.buf.format()
+									end,
+								}),
+							})
+						end,
+						marksman = function(opts)
+							require("lspconfig").marksman.setup(opts)
 						end,
 					},
 				})

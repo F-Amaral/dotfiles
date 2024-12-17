@@ -68,6 +68,9 @@ return {
 				"<leader>dc",
 				function()
 					local dap = require("dap")
+					if vim.fn.filereadable(".vscode/launch.json") then
+						require("dap.ext.vscode").load_launchjs()
+					end
 					dap.continue()
 				end,
 				{ desc = "Continue" },
@@ -111,6 +114,17 @@ return {
 	},
 	{
 		"leoluz/nvim-dap-go",
+		ft = "go",
+		dependencies = { "mfussenegger/nvim-dap" },
+		opts = {
+			delve = {
+				detached = false,
+			},
+		},
+		config = function(_, opts)
+			require("dap-go").setup(opts)
+			require("dap").set_log_level("TRACE")
+		end,
 	},
 	{
 		"nvim-telescope/telescope-dap.nvim",
