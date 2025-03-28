@@ -28,7 +28,6 @@ return {
 			event = "InsertEnter",
 			config = function()
 				local cmp = require("cmp")
-
 				cmp.setup({
 					preselect = "item",
 					completion = {
@@ -183,12 +182,23 @@ return {
 					},
 				})
 
+				local capabilities = require("cmp_nvim_lsp").default_capabilities() --nvim-cmp
+
+				local on_attach = function(client, bufnr)
+					local function buf_set_keymap(...)
+						vim.api.nvim_buf_set_keymap(bufnr, ...)
+					end
+					local function buf_set_option(...)
+						vim.api.nvim_buf_set_option(bufnr, ...)
+					end
+
+					buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
+				end
+
 				require("mason-lspconfig").setup({
 					ensure_installed = {
 						"gopls",
 						"lua_ls",
-						"terraformls",
-						"tflint",
 					},
 					handlers = {
 						-- this first function is the "default handler"
@@ -200,7 +210,7 @@ return {
 							-- (Optional) Configure lua language server for neovim
 							require("lspconfig").lua_ls.setup({
 								settings = {
-									Lua = {
+									lua = {
 										runtime = {
 											version = "Lua 5.3",
 											path = {
@@ -222,11 +232,24 @@ return {
 								},
 							})
 						end,
+						yamlls = function()
+							require("lspconfig").yamlls.setup({
+								capabilities = capabilities,
+								on_attach = on_attach,
+								settings = {
+									yaml = {
+										schemas = {
+											["https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/refs/heads/main/configuration-schema.json"] = "openapi/**/*.yaml",
+											["https://smocker.dev/smocker.schema.json"] = "apimocks/**/*.yaml",
+										},
+									},
+								},
+							})
+						end,
 						gopls = function()
 							require("lspconfig").gopls.setup({
-								on_attach = function(client, bufnr)
-									-- client.server_capabilities.semanticTokensProvider = nil
-								end,
+								on_attach = on_attach,
+								capabilities = capabilities,
 								vim.api.nvim_create_autocmd("BufWritePre", {
 									pattern = "*.go",
 									callback = function()
@@ -252,6 +275,7 @@ return {
 								}),
 								settings = {
 									gopls = {
+										experimentalPostfixCompletions = true,
 										analyses = {
 											unusedparams = true,
 											shadow = true,
@@ -288,25 +312,6 @@ return {
 									},
 								},
 							})
-						end,
-						terraformls = function()
-							require("lspconfig").terraformls.setup({
-								vim.filetype.add({
-									extension = {
-										tf = "terraform",
-									},
-								}),
-								filetypes = { "terraform" },
-								vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-									pattern = { "*.tf", "*.tfvars" },
-									callback = function()
-										vim.lsp.buf.format()
-									end,
-								}),
-							})
-						end,
-						marksman = function(opts)
-							require("lspconfig").marksman.setup(opts)
 						end,
 					},
 				})

@@ -79,7 +79,7 @@ inner.vertical =   0
 outer.left =       0
 outer.bottom =     0
 outer.top =        0
-outer.right =      5
+outer.right =      0
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -142,6 +142,8 @@ alt-3 = 'workspace 3'
 alt-4 = 'workspace 4'
 alt-5 = 'workspace 5'
 alt-6 = 'workspace 6'
+alt-7 = 'workspace 7'
+alt-8 = 'workspace 8'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1'
@@ -150,6 +152,8 @@ alt-shift-3 = 'move-node-to-workspace 3'
 alt-shift-4 = 'move-node-to-workspace 4'
 alt-shift-5 = 'move-node-to-workspace 5'
 alt-shift-6 = 'move-node-to-workspace 6'
+alt-shift-7 = 'move-node-to-workspace 7'
+alt-shift-8 = 'move-node-to-workspace 8'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
@@ -177,14 +181,16 @@ alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
 
 alt-o = 'exec-and-forget open -a /Applications/Obsidian.app'
-alt-k = 'exec-and-forget open -a /Applications/Kitty.app'
-alt-b = 'exec-and-forget open -a /Applications/Firefox.app'
+alt-t = 'exec-and-forget open -a /Applications/Ghostty.app'
+alt-b = 'exec-and-forget open -a /Applications/Chrome.app'
 
 [workspace-to-monitor-force-assignment]
 1 = 'lg'
 2 = 'lg'
 3 = 'lg'
 4 = 'lg'
-5 = ['built-in', 'lg']
-6 = ['built-in', 'lg']
+5 = 'lg'
+6 = 'lg'
+7 = 'lg'
+8 = 'lg'
 
