@@ -316,6 +316,9 @@ return {
 					},
 				})
 			end,
+			golangci_lint_ls = function()
+				require("golangci-lint-ls").setup({})
+			end,
 		},
 	},
 	{

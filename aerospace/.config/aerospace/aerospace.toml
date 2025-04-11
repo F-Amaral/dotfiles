@@ -52,9 +52,9 @@ automatically-unhide-macos-hidden-apps = true
 if.app-name-regex-substring = 'finder'
 run = 'layout floating'
 
-[[on-window-detected]]
-if.app-name-regex-substring = 'spotify'
-run = 'layout floating'
+# [[on-window-detected]]
+# if.app-name-regex-substring = 'spotify'
+# run = 'layout floating'
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'slackmacgap'
@@ -184,13 +184,13 @@ alt-o = 'exec-and-forget open -a /Applications/Obsidian.app'
 alt-t = 'exec-and-forget open -a /Applications/Ghostty.app'
 alt-b = 'exec-and-forget open -a /Applications/Chrome.app'
 
-[workspace-to-monitor-force-assignment]
-1 = 'lg'
-2 = 'lg'
-3 = 'lg'
-4 = 'lg'
-5 = 'lg'
-6 = 'lg'
-7 = 'lg'
-8 = 'lg'
+# [workspace-to-monitor-force-assignment]
+# 1 = 'lg'
+# 2 = 'lg'
+# 3 = 'lg'
+# 4 = 'lg'
+# 5 = 'lg'
+# 6 = 'lg'
+# 7 = 'lg'
+# 8 = 'lg'
 
