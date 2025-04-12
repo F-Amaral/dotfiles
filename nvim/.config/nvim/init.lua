@@ -1,5 +1,11 @@
-vim.g.mapleader = " "
+require("config.lazy")
 
-require("config")
+vim.opt.shiftwidth = 4
+vim.opt.number = true
+vim.opt.relativenumber = true
 
-require("lazy").setup("plugins")
+vim.opt.clipboard = "unnamedplus"
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+vim.keymap.set("n", "<space><space>x", "<cmd>source %<CR>")
