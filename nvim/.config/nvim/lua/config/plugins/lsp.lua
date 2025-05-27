@@ -15,6 +15,7 @@ return {
     config = function()
       vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>")
       vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>")
+      vim.keymap.set("n", "gca", "<cmd>lua vim.lsp.buf.code_action()<cr>")
 
 
       local capabilities = require("blink.cmp").get_lsp_capabilities()
@@ -102,6 +103,11 @@ return {
 
 
       require("lspconfig").ts_ls.setup {}
+
+
+      require 'lspconfig'.terraformls.setup {}
+      require 'lspconfig'.clangd.setup {}
+      require 'lspconfig'.jsonls.setup {}
     end,
   }
 }

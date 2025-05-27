@@ -1,0 +1,13 @@
+release_bind = [ "KeyA", "KeyS", "KeyD", "KeyF" ]
+
+# optional port (defaults to 4242)
+port = 4242
+
+# define a client on the right side with host name "iridium"
+[[clients]]
+# position (left | right | top | bottom)
+position = "right"
+# hostname
+hostname = "spitlab"
+# activate this client immediately when lan-mouse is started
+activate_on_startup = true
