@@ -1,0 +1,140 @@
+return {
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      {
+        "rcarriga/nvim-dap-ui",
+        keys = {
+          {
+            "<leader>du",
+            function()
+              local dapui = require("dapui")
+              dapui.toggle({})
+            end,
+            { desc = "Dap UI" },
+          },
+          {
+            "<leader>de",
+            function()
+              local dapui = require("dapui")
+              dapui.eval()
+            end,
+            { desc = "Eval", mode = { "n", "v" } },
+          },
+        },
+        opts = {},
+        config = function(_, opts)
+          local dap = require("dap")
+          local dapui = require("dapui")
+          dapui.setup(opts)
+          dap.listeners.after.event_initialized["dapui_config"] = function()
+            dapui.open({})
+          end
+          -- dap.listeners.after.event_terminated["dapui_config"] = function()
+          --   dapui.close({})
+          -- end
+          -- dap.listeners.before.event_exited["dapui_config"] = function()
+          --   dapui.close({})
+          -- end
+        end,
+      },
+      {
+        "theHamsta/nvim-dap-virtual-text",
+        opts = {},
+      },
+    },
+    keys = {
+      {
+        "<leader>dc",
+        function()
+          local dap = require("dap")
+          -- if vim.fn.filereadable(".vscode/launch.json") then
+          --   require("dap.ext.vscode").load_launchjs()
+          -- end
+          dap.continue()
+        end,
+        { desc = "Continue" },
+      },
+      {
+        "<F7>",
+        function()
+          local dap = require("dap")
+          dap.step_into()
+        end,
+        { desc = "Step into" },
+      },
+      {
+        "<F8>",
+        function()
+          local dap = require("dap")
+          dap.step_over()
+        end,
+        { desc = "Step over" },
+      },
+      {
+        "<S-F8>",
+        function()
+          local dap = require("dap")
+          dap.step_out()
+        end,
+        { desc = "Step out" },
+      },
+      {
+        "<leader>db",
+        function()
+          local dap = require("dap")
+          dap.toggle_breakpoint()
+        end,
+        { desc = "Set Breakpoint" },
+      },
+    },
+    config = function()
+      vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
+    end,
+  },
+  {
+    "leoluz/nvim-dap-go",
+    ft = "go",
+    dependencies = { "mfussenegger/nvim-dap" },
+    opts = {
+      dap_configurations = {
+        {
+          -- Must be "go" or it will be ignored by the plugin
+          type = "go",
+          name = "Attach remote",
+          mode = "remote",
+          request = "attach",
+        },
+        delve = {
+          detached = vim.fn.has("win32") == 0,
+        },
+      },
+    },
+    config = function(_, opts)
+      require("dap-go").setup(opts)
+      local dap = require("dap")
+      dap.set_log_level("TRACE")
+      dap.configurations.go = {
+        {
+          type = "go",
+          name = "Debug (Build Flags)",
+          request = "launch",
+          program = "./main.go",
+          args = require("dap-go").get_arguments,
+          outputMode = "remote",
+          -- buildFlags = require("dap-go").get_build_flags,
+        },
+        {
+          type = "delve",
+          name = "Debug",
+          request = "launch",
+          program = "${file}",
+          outputMode = "remote",
+        },
+      }
+    end,
+  },
+  {
+    "nvim-telescope/telescope-dap.nvim",
+  },
+}
