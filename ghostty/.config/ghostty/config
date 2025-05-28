@@ -2,3 +2,4 @@ theme = catppuccin-mocha
 keybind = global:cmd+s=toggle_quick_terminal
 mouse-hide-while-typing = true
 window-decoration = true
+font-family="JetBrains Mono"
