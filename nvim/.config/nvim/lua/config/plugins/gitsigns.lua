@@ -9,8 +9,10 @@ return {
           gitsigns.preview_hunk()
         end
       })
-    end
-
+    end,
+    keys = {
+      { "<Leader>gp", "<cmd>Gitsigns preview_hunk<CR>", mode = "n", desc = "Open preview" },
+    },
   }
 
 }

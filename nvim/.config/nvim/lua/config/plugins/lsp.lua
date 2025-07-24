@@ -2,15 +2,20 @@ return {
   {
     "https://github.com/neovim/nvim-lspconfig",
     dependencies = {
-      "folke/lazydev.nvim",
-      ft = "lua", -- only load on lua files
-      opts = {
-        library = {
-          -- See the configuration section for more details
-          -- Load luvit types when the `vim.uv` word is found
-          { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-        },
+      {
+        "b0o/schemastore.nvim",
       },
+      {
+        "folke/lazydev.nvim",
+        ft = "lua", -- only load on lua files
+        opts = {
+          library = {
+            -- See the configuration section for more details
+            -- Load luvit types when the `vim.uv` word is found
+            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+          },
+        },
+      }
     },
     config = function()
       vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>")
@@ -107,7 +112,28 @@ return {
 
       require 'lspconfig'.terraformls.setup {}
       require 'lspconfig'.clangd.setup {}
-      require 'lspconfig'.jsonls.setup {}
+      require('lspconfig').yamlls.setup {
+        settings = {
+          yaml = {
+            schemaStore = {
+              -- You must disable built-in schemaStore support if you want to use
+              -- this plugin and its advanced options like `ignore`.
+              enable = false,
+              -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+              url = "",
+            },
+            schemas = require('schemastore').yaml.schemas(),
+          },
+        }
+      }
+      require('lspconfig').jsonls.setup {
+        settings = {
+          json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+          },
+        },
+      }
     end,
   }
 }

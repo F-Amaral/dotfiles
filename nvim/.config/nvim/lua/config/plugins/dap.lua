@@ -30,12 +30,12 @@ return {
           dap.listeners.after.event_initialized["dapui_config"] = function()
             dapui.open({})
           end
-          -- dap.listeners.after.event_terminated["dapui_config"] = function()
-          --   dapui.close({})
-          -- end
-          -- dap.listeners.before.event_exited["dapui_config"] = function()
-          --   dapui.close({})
-          -- end
+          dap.listeners.after.event_terminated["dapui_config"] = function()
+            dapui.close({})
+          end
+          dap.listeners.before.event_exited["dapui_config"] = function()
+            dapui.close({})
+          end
         end,
       },
       {
@@ -93,6 +93,37 @@ return {
     end,
   },
   {
+    "jbyuki/one-small-step-for-vimkind",
+    dependencies = { "mfussenegger/nvim-dap" },
+    config = function()
+      local dap = require "dap"
+      dap.configurations.lua = {
+        {
+          type = 'nlua',
+          request = 'attach',
+          name = "Debug",
+        }
+      }
+
+      dap.adapters.nlua = function(callback, config)
+        callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
+      end
+      vim.keymap.set('n', '<leader>dl', function()
+        require "osv".launch({ port = 8086 })
+      end, { noremap = true })
+
+      vim.keymap.set('n', '<leader>dw', function()
+        local widgets = require "dap.ui.widgets"
+        widgets.hover()
+      end)
+
+      vim.keymap.set('n', '<leader>df', function()
+        local widgets = require "dap.ui.widgets"
+        widgets.centered_float(widgets.frames)
+      end)
+    end,
+  },
+  {
     "leoluz/nvim-dap-go",
     ft = "go",
     dependencies = { "mfussenegger/nvim-dap" },
@@ -125,7 +156,7 @@ return {
           -- buildFlags = require("dap-go").get_build_flags,
         },
         {
-          type = "delve",
+          type = "go",
           name = "Debug",
           request = "launch",
           program = "${file}",

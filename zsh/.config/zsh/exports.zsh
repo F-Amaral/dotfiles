@@ -13,3 +13,4 @@ export GIT_TERMINAL_PROMPT=1
 export PATH="/Users/famaral/Library/Python/3.9/bin:$PATH" 
 export PATH="$HOME/bin/.local/scripts:$PATH"
 
+export TAVILY_API_KEY="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"

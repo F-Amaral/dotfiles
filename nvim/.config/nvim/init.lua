@@ -6,6 +6,7 @@ vim.opt.expandtab = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.smartindent = true
+vim.opt.signcolumn = "yes"
 
 vim.opt.clipboard = "unnamedplus"
 vim.opt.ignorecase = true
@@ -27,13 +28,13 @@ vim.keymap.set("n", "N", "Nzzzv")
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 vim.keymap.set(
-	"n",
-	"<leader>ee",
-	"oif err != nil {<CR>}<Esc>Oreturn err<Esc>"
+  "n",
+  "<leader>ee",
+  "oif err != nil {<CR>}<Esc>Oreturn err<Esc>"
 )
 
 vim.keymap.set(
-	"n",
-	"gta",
-	"<cmd> GoAddTags "
+  "n",
+  "gta",
+  "<cmd> GoAddTags "
 )
