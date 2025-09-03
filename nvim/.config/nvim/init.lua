@@ -1,4 +1,5 @@
 require("config.lazy")
+require("config.lsp")
 vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
@@ -38,3 +39,7 @@ vim.keymap.set(
   "gta",
   "<cmd> GoAddTags "
 )
+
+vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>")
+vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>")
+vim.keymap.set("n", "gca", "<cmd>lua vim.lsp.buf.code_action()<cr>")
