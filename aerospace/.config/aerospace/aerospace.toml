@@ -2,11 +2,6 @@ after-login-command = []
 
 after-startup-command = [
 'exec-and-forget open /Applications/Ghostty.app',
-'exec-and-forget open /Applications/Google Chrome.app',
-'exec-and-forget open /Applications/Postman.app',
-'exec-and-forget open /Users/phill/Applications/Chrome Apps.localized/Outlook (PWA).app',
-'exec-and-forget open /Users/phill/Applications/Chrome Apps.localized/Slack.app',
-'exec-and-forget open /Applications/Spotify.app',
 ]
 
 exec-on-workspace-change = []
