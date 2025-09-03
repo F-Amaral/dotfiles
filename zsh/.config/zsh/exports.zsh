@@ -14,4 +14,3 @@ export PATH="/Users/famaral/Library/Python/3.9/bin:$PATH"
 export PATH="$HOME/bin/.local/scripts:$PATH"
 export PATH="$PATH:$(yarn global bin)"
 
-export TAVILY_API_KEY="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"
