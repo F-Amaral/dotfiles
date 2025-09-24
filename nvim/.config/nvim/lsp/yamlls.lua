@@ -1,4 +1,4 @@
-return require("schema-companion").setup_client({
+return {
   cmd = { "yaml-language-server", "--stdio" },
   filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values" },
   root_markers = { ".git" },
@@ -19,4 +19,4 @@ return require("schema-companion").setup_client({
       validate = true,
     },
   }
-})
+}

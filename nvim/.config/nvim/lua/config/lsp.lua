@@ -1,4 +1,4 @@
-vim.lsp.enable({ 'lua_ls', 'gopls', 'terraform_ls', 'yamlls', 'jsonls' })
+vim.lsp.enable({ 'lua_ls', 'gopls', 'terraform_ls', 'yamlls', 'jsonls', 'ts_query_ls' })
 
 vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(ev)
