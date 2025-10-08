@@ -43,3 +43,8 @@ vim.keymap.set(
 vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>")
 vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>")
 vim.keymap.set("n", "gca", "<cmd>lua vim.lsp.buf.code_action()<cr>")
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { '<filetype>' },
+  callback = function() vim.treesitter.start() end,
+})

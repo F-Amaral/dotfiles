@@ -13,30 +13,19 @@ return {
       "nvim-neotest/neotest-plenary",
       "nvim-neotest/neotest-vim-test",
       {
-        "nvim-treesitter/nvim-treesitter", -- Optional, but recommended
-        branch = "main",                   -- NOTE; not the master branch!
-        build = function()
-          vim.cmd([[:TSUpdate go]])
-        end,
-      },
-      {
         "fredrikaverpil/neotest-golang",
         dependencies = {
           "uga-rosa/utf8.nvim",
-          {
-            "leoluz/nvim-dap-go",
-            opts = {},
-          },
+          "leoluz/nvim-dap-go",
         },
-        version = "*",
+        branch = "main",
         build = function()
           vim.system({ "go", "install", "gotest.tools/gotestsum@latest" }):wait() -- Optional, but recommended
         end,
       },
     },
-    opts = function(_, opts)
-      opts.adapters = opts.adapters or {}
-      opts.adapters["neotest-golang"] = {
+    config = function()
+      local config = {
         go_test_args = {
           "-v",
           "-race",
@@ -45,12 +34,11 @@ return {
           "-shuffle=on",
           "-coverprofile=" .. vim.fn.getcwd() .. "/coverage.out",
         },
-        -- runner = "gotestsum",
+        runner = "gotestsum",
         sanitize_output = false,
         dap_go_enabled = true,
         testify_enabled = true,
         warn_test_name_dupes = false,
-        log_level = vim.log.levels.TRACE, -- set log level
         quickfix = {
           open = function()
             vim.cmd("Trouble quickfix")
@@ -58,38 +46,13 @@ return {
           enabled = true,
         },
       }
-    end,
-    config = function(_, opts)
-      if opts.adapters then
-        local adapters = {}
-        for name, config in pairs(opts.adapters or {}) do
-          if type(name) == "number" then
-            if type(config) == "string" then
-              config = require(config)
-            end
-            adapters[#adapters + 1] = config
-          elseif config ~= false then
-            local adapter = require(name)
-            if type(config) == "table" and not vim.tbl_isempty(config) then
-              local meta = getmetatable(adapter)
-              if adapter.setup then
-                adapter.setup(config)
-              elseif adapter.adapter then
-                adapter.adapter(config)
-                adapter = adapter.adapter
-              elseif meta and meta.__call then
-                adapter(config)
-              else
-                error("Adapter " .. name .. " does not support setup")
-              end
-            end
-            adapters[#adapters + 1] = adapter
-          end
-        end
-        opts.adapters = adapters
-      end
 
-      require("neotest").setup(opts)
+      require("neotest").setup({
+        adapters = {
+          require("neotest-golang")(config)
+        }
+
+      })
     end,
     keys = {
       { "<leader>ta", function() require("neotest").run.attach() end,                                      desc = "[t]est [a]ttach" },
