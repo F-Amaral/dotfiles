@@ -1,0 +1,50 @@
+;; =========================
+;; Configuração base
+;; =========================
+
+(defcfg
+  process-unmapped-keys yes
+)
+
+;; =========================
+;; Fonte de teclas
+;; =========================
+
+(defsrc
+  apos
+)
+
+;; =========================
+;; Camada base
+;; =========================
+
+(deflayer base
+  smart-quote
+)
+
+;; =========================
+;; Alias: apóstrofo inteligente (estilo macOS)
+;; =========================
+
+(defalias
+  smart-quote
+    (tap-hold-release 180 180
+      apos
+      (multi
+        (apos a) á
+        (apos e) é
+        (apos i) í
+        (apos o) ó
+        (apos u) ú
+
+        (apos A) Á
+        (apos E) É
+        (apos I) Í
+        (apos O) Ó
+        (apos U) Ú
+
+        (apos c) ç
+        (apos C) Ç
+      )
+    )
+)
