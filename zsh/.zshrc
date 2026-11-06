@@ -15,7 +15,6 @@ if [ ! -d "$ZINIT_HOME" ] ; then
     git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
-
 source "${ZINIT_HOME}/zinit.zsh"
 
 plugins=(git)

@@ -28,4 +28,5 @@ alias src="source $HOME/.zshrc"
 alias ~="cd ~"
 alias ls='ls --color'
 alias ll='ls -la --color'
-
+alias dng='WINEPREFIX="$HOME/wine-dng" wine "$HOME/wine-dng/drive_c/Program Files/Adobe/Adobe DNG Converter/Adobe DNG Converter.exe"'
+alias ssh='ghostty +ssh --'
